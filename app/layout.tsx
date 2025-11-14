@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Background from "./components/background";
+import Loader from "./components/ui/Loader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +31,7 @@ export default function RootLayout({
       >
         <Background />
         <div className="fixed inset-0 bg-black/40 -z-5"></div>
-
+        <Loader />
         {children}
       </body>
     </html>
