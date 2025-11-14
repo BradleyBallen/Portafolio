@@ -23,8 +23,7 @@ export default function Home() {
 
       {/* App Bar */}
       <AppBar 
-        theme={theme} 
-        onToggleTheme={() => setTheme(theme === "dark" ? "light" : "dark")} 
+        
       />
 
       {/* Perfil */}
