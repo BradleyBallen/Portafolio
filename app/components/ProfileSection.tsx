@@ -5,14 +5,20 @@ import { motion } from "framer-motion";
 export default function ProfileSection() {
   return (
     <section className="w-full flex justify-center mt-32 px-6 mb-24">
-      <div className="flex items-center gap-10 max-w-4xl">
+      <div
+        className="
+          flex flex-col items-center text-center
+          md:flex-row md:items-center md:text-left
+          gap-10 max-w-4xl
+        "
+      >
 
-        {/* 🔵 Imagen totalmente redonda y sin deformarse */}
+        {/* 🔵 Imagen completamente redonda con hover minimalista */}
         <motion.div
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
           className="
-            w-44 h-44 shrink-0      /* 🔥 ESTA ES LA SOLUCIÓN */
+            w-44 h-44 shrink-0
             rounded-full overflow-hidden
             bg-white/10 backdrop-blur-xl
             border border-white/20
@@ -29,16 +35,18 @@ export default function ProfileSection() {
           />
         </motion.div>
 
-        <div>
+        <div className="max-w-xl">
           <h2 className="text-3xl font-bold text-white mb-3">
             Hola, soy Bradley
           </h2>
 
-          <p className="text-white/80 text-lg">
-            Apasionado por la tecnología y el desarrollo de soluciones que transforman ideas en resultados reales.
-            Disfruto explorar nuevas herramientas, comprender cómo funcionan los sistemas y encontrar maneras de
-            optimizar cada proceso. Me definen la lógica, la curiosidad y la dedicación por lograr resultados
-            eficientes y de calidad. Siempre busco aprender, innovar y aportar valor en cada proyecto que emprendo.
+          <p className="text-white/80 text-lg leading-relaxed">
+            Apasionado por la tecnología y el desarrollo de soluciones que
+            transforman ideas en resultados reales. Disfruto explorar nuevas
+            herramientas, comprender cómo funcionan los sistemas y optimizar
+            cada proceso. Me definen la lógica, la curiosidad y la dedicación
+            por lograr resultados eficientes y de calidad. Siempre busco
+            aprender, innovar y aportar valor en cada proyecto que emprendo.
           </p>
         </div>
 
