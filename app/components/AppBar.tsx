@@ -78,7 +78,7 @@ export default function AppBar() {
       <motion.h1
         initial={{ opacity: 0, y: -6 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-white text-lg md:text-xl font-semibold"
+        className="text-lg md:text-xl font-semibold bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent"
       >
         {text}
         <span className="text-cyan-300/70 animate-pulse">|</span>
