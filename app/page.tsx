@@ -8,6 +8,7 @@ import ProjectsSection from "./components/ProjectsSection";
 import ScrollFadeBackground from "./components/ScrollFadeBackground";
 import AnimatedBackground from "./components/background"; 
 import SkillsSection from "./components/SkillsSection";
+import StudiesSection from "./components/StudiesSection";
 
 export default function Home() {
 
@@ -29,6 +30,9 @@ export default function Home() {
 
       {/* Perfil */}
       <ProfileSection />
+
+      {/* seccion de estudios */  }
+      <StudiesSection />
 
       {/* skill bars */}
       <SkillsSection />
