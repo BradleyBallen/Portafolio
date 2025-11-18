@@ -29,6 +29,7 @@ type Project = {
   long: string;
   tech: { name: string; icon: JSX.Element }[];
   github?: string;
+  years?: string; // <-- añadido: evita el error al usar open.years
 };
 
 export default function ProjectsSection() {
