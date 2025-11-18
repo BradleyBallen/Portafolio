@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, JSX } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   SiNextdotjs,
