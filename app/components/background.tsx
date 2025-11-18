@@ -13,7 +13,7 @@ export default function Background() {
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
 
-    const characters = "01<>[]{}+=-/*%#@&$ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    const characters = "01<>[]{}+=-/*%#@&$1234567890";
 
     const palette = [
       "#00d4ff", "#2dff8f", "#ffd000", "#ff0055", "#e600ff",
@@ -28,7 +28,7 @@ export default function Background() {
       const z = Math.random();
 
       //VELOCIDAD REDUCIDA PARA MOVIMIENTO MÁS SUAVE
-      const speedFactor = 0.2 + z * 0.29;
+      const speedFactor = 0.6 + z * 0.8;
 
       return {
         x: Math.random() * width,
@@ -40,9 +40,9 @@ export default function Background() {
         char: characters[Math.floor(Math.random() * characters.length)],
 
         angle: Math.random() * Math.PI * 2,
-        rotationSpeed: (Math.random() - 0.5) * 0.002, // 🔥 más suave
+        rotationSpeed: (Math.random() - 0.5) * 0.02, // 🔥 más suave
         twist: Math.random(),
-        twistSpeed: (Math.random() - 0.5) * 0.003,   // 🔥 más suave
+        twistSpeed: (Math.random() - 0.5) * 0.03,   // 🔥 más suave
 
         color: palette[Math.floor(Math.random() * palette.length)],
         
