@@ -191,7 +191,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
   ref={constraintsRef}
   className="relative w-full max-w-6xl 
   min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px]
-  flex items-center justify-center mt-10 sm:mt-16"
+  flex items-center justify-center mt-1 sm:mt-4    "
   style={{ perspective: "1500px" }}
 
         onMouseEnter={() => setIsPaused(true)}
