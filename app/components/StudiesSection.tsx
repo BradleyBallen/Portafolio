@@ -176,7 +176,8 @@ export default function StudiesSection() {
   }, []);
 
   return (
-    <section className="w-full flex flex-col items-center justify-center min-h-screen px-4 sm:px-6 py-8 sm:py-12">
+    <section className="w-full flex flex-col items-center justify-start 
+min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -187,9 +188,12 @@ export default function StudiesSection() {
 
       {/* CONTENEDOR 3D DEL CARRUSEL */}
       <div
-        ref={constraintsRef}
-        className="relative w-full max-w-6xl h-auto sm:h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center"
-        style={{ perspective: "1500px" }}
+  ref={constraintsRef}
+  className="relative w-full max-w-6xl 
+  min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px]
+  flex items-center justify-center mt-10 sm:mt-16"
+  style={{ perspective: "1500px" }}
+
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)} // removed setIsDragging(false)
       >
