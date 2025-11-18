@@ -11,6 +11,7 @@ import {
   FaBook,
   FaDownload,
   FaFilePdf,
+  FaGoogle,
 } from "react-icons/fa";
 import { IconType } from "react-icons";
 
@@ -31,9 +32,11 @@ interface StudyItem {
 export default function StudiesSection() {
   const [selected, setSelected] = useState<StudyItem | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
-  // removed isDragging state (cards are no longer draggable)
+  const [isHovered, setIsHovered] = useState(false);
   const constraintsRef = useRef<HTMLDivElement | null>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const studies: StudyItem[] = useMemo(
     () => [
@@ -92,6 +95,27 @@ export default function StudiesSection() {
         category: "Certificación Internacional",
       },
       {
+        title: "Curso: Fundamentals of Digital Marketing",
+        place: "Google Digital Garage",
+        years: "2024",
+        icon: <FaGoogle />,
+        iconComponent: FaGoogle,
+        iconColor: "from-blue-400 to-green-500",
+        description:
+          "Curso oficial certificado por Google que cubre los principios esenciales del marketing digital: presencia online, búsqueda, analítica, publicidad y estrategias de contenido.",
+        highlights: [
+          "Fundamentos del marketing digital",
+          "Optimización en motores de búsqueda (SEO y SEM)",
+          "Creación de estrategias de contenido efectivas",
+          "Publicidad en línea y Google Ads",
+          "Analítica web y métricas clave",
+          "Presencia digital y crecimiento de marca",
+        ],
+        category: "Certificación Internacional",
+        pdfFile: "fundamentals-digital-marketing.pdf",
+        hasPreview: true,
+      },
+      {
         title: "Taller: Diseño Visual y Gráfico",
         place: "Universidad de Cundinamarca",
         years: "18 de Octubre de 2023",
@@ -135,27 +159,47 @@ export default function StudiesSection() {
     []
   );
 
+  // Inicializar el intervalo de rotación automática
   useEffect(() => {
-    if (isPaused) return;
+    const startInterval = () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % studies.length);
-    }, 3500);
+      intervalRef.current = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % studies.length);
+      }, 5000);
+    };
 
-    return () => clearInterval(interval);
-  }, [studies.length, isPaused]);
+    startInterval();
 
-  const getCardStyle = (index: number) => {
-    const position = (index - currentIndex + studies.length) % studies.length;
+    // Reiniciar el intervalo si el usuario interactúa
+    const handleUserInteraction = () => {
+      startInterval();
+    };
 
-    const configs = [
-      { x: 0, z: 0, rotateY: 0, scale: 1.1, opacity: 1 },
-      { x: 320, z: -200, rotateY: -35, scale: 0.85, opacity: 0.7 },
-      { x: -320, z: -200, rotateY: 35, scale: 0.85, opacity: 0.7 },
-    ];
+    window.addEventListener("mousemove", handleUserInteraction);
+    window.addEventListener("scroll", handleUserInteraction);
+    window.addEventListener("touchstart", handleUserInteraction);
 
-    return configs[position] || { x: 0, z: -400, rotateY: 0, scale: 0.6, opacity: 0 };
-  };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      window.removeEventListener("mousemove", handleUserInteraction);
+      window.removeEventListener("scroll", handleUserInteraction);
+      window.removeEventListener("touchstart", handleUserInteraction);
+    };
+  }, [studies.length]);
+
+  // --- memoized card styles to avoid recalculation per render ---
+  const cardStyles = useMemo(() => {
+    return studies.map((_, index) => {
+      const position = (index - currentIndex + studies.length) % studies.length;
+      const configs = [
+        { x: 0, z: 0, rotateY: 0, scale: 1.1, opacity: 1 },
+        { x: 320, z: -200, rotateY: -35, scale: 0.85, opacity: 0.7 },
+        { x: -320, z: -200, rotateY: 35, scale: 0.85, opacity: 0.7 },
+      ];
+      return configs[position] || { x: 0, z: -400, rotateY: 0, scale: 0.6, opacity: 0 };
+    });
+  }, [studies.length, currentIndex]);
 
   const handleDownloadPDF = (filename: string | undefined) => {
     if (!filename) return;
@@ -168,42 +212,53 @@ export default function StudiesSection() {
     document.body.removeChild(link);
   };
 
-  // Prevent accidental native drag on elements (extra safeguard)
-  useEffect(() => {
-    const onDragStart = (e: Event) => e.preventDefault();
-    document.addEventListener("dragstart", onDragStart, { capture: true });
-    return () => document.removeEventListener("dragstart", onDragStart, { capture: true });
-  }, []);
+  // Manejo de deslizamiento
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    if (touchStartX.current - touchEndX.current > 50) {
+      // Deslizar a la izquierda
+      setCurrentIndex((prev) => (prev + 1) % studies.length);
+    } else if (touchEndX.current - touchStartX.current > 50) {
+      // Deslizar a la derecha
+      setCurrentIndex((prev) => (prev - 1 + studies.length) % studies.length);
+    }
+  };
 
   return (
-    <section className="w-full flex flex-col items-center justify-start 
-min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
+    <section className="w-full flex flex-col items-center justify-start min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold animated-gradient-text mb-8 sm:mb-16 text-center px-2"
+        className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold animated-gradient-text mb-6 sm:mb-12 text-center px-2"
       >
         Estudios y Experiencias de Aprendizaje
       </motion.h2>
 
       {/* CONTENEDOR 3D DEL CARRUSEL */}
       <div
-  ref={constraintsRef}
-  className="relative w-full max-w-6xl 
-  min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px]
-  flex items-center justify-center mt-1 sm:mt-4    "
-  style={{ perspective: "1500px" }}
-
-        onMouseEnter={() => setIsPaused(true)}
-        onMouseLeave={() => setIsPaused(false)} // removed setIsDragging(false)
+        ref={constraintsRef}
+        className="relative w-full max-w-6xl min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center mt-0 sm:mt-2"
+        style={{ perspective: "1500px" }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         {studies.map((study, index) => {
-          const style = getCardStyle(index);
+          const style = cardStyles[index];
 
           return (
             <motion.div
               key={`${study.title}-${index}`}
-              /* removed drag-related props to disable dragging completely */
+              initial={false}
               onClick={() => setSelected(study)}
               animate={{
                 x: style.x,
@@ -216,7 +271,6 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
                 type: "spring",
                 stiffness: 100,
                 damping: 20,
-                mass: 1,
               }}
               whileHover={{ scale: style.scale * 1.05, y: -10 }}
               className="absolute w-[260px] sm:w-[280px] md:w-[300px] cursor-pointer
@@ -227,10 +281,9 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
                 transformStyle: "preserve-3d",
                 willChange: "transform, opacity",
                 pointerEvents: "auto",
-                // small zIndex tweak to reduce repaint overlaps
                 zIndex: 10 + (style.opacity ? Math.round(style.opacity * 10) : 0),
+                translateZ: `${style.z}px`,
               }}
-              // prevent any accidental native dragging behavior on the element
               onMouseDown={(e) => e.preventDefault()}
               onTouchStart={(e) => e.preventDefault()}
               onDragStart={(e) => e.preventDefault()}
@@ -265,7 +318,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
       </div>
 
       {/* INDICADORES DE POSICIÓN */}
-      <div className="flex gap-2 sm:gap-3 mt-8 sm:mt-12 flex-wrap justify-center">
+      <div className="flex gap-2 sm:gap-3 mt-6 sm:mt-10 flex-wrap justify-center">
         {studies.map((_, index) => (
           <button
             key={index}
@@ -294,17 +347,11 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
               transition={{ type: "spring", damping: 25 }}
               className="bg-gradient-to-br from-white/10 via-white/5 to-white/10
               border-2 border-white/20 backdrop-blur-3xl p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl
-              text-white w-full max-w-xs sm:max-w-sm md:max-w-2xl shadow-2xl relative overflow-hidden my-4"
+              text-white w-full max-w-xs sm:max-w-sm md:max-w-2xl shadow-2xl relative overflow-hidden my-8 sm:my-12 md:my-16"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* EFECTO DE BRILLO DE FONDO */}
-              <div
-                className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-gradient-to-br from-cyan-500/20 to-purple-500/20
-                rounded-full blur-3xl -z-10"
-              />
-
               {/* HEADER DEL MODAL */}
-              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6">
+              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-6 pt-4 sm:pt-6">
                 <div
                   className={`p-4 sm:p-5 rounded-2xl bg-gradient-to-br ${selected.iconColor}
                   shadow-xl flex-shrink-0`}
@@ -316,7 +363,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
                   <div className="inline-block px-2 sm:px-3 py-1 rounded-full bg-white/10 text-xs text-cyan-300 mb-2 border border-cyan-400/30">
                     {selected.category}
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent break-words">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-2 bg-gradient-to-r from-white to-cyan-200 bg-clip-text text-transparent break-words line-clamp-3">
                     {selected.title}
                   </h3>
                   <p className="text-cyan-300 font-medium flex items-center gap-2 text-xs sm:text-sm mb-1">
@@ -331,10 +378,10 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
               </div>
 
               {/* CONTENIDO DEL MODAL CON SCROLL */}
-              <div className="space-y-4 sm:space-y-6 max-h-96 sm:max-h-[500px] overflow-y-auto pr-2 sm:pr-4">
+              <div className="space-y-4 sm:space-y-6 max-h-72 sm:max-h-[420px] overflow-y-auto pr-2 sm:pr-4">
                 {/* SECCIÓN DESCRIPCIÓN */}
                 <div>
-                  <h4 className="text-base sm:text-lg font-semibold mb-2 flex items-center gap-2">
+                  <h4 className="text-sm sm:text-base font-semibold mb-2 flex items-center gap-2">
                     <FaBook className="text-cyan-400 flex-shrink-0" />
                     Descripción
                   </h4>
@@ -345,7 +392,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
 
                 {/* SECCIÓN ASPECTOS DESTACADOS */}
                 <div>
-                  <h4 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2">
+                  <h4 className="text-sm sm:text-base font-semibold mb-3 flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-gradient-to-r from-cyan-400 to-purple-400 animate-pulse flex-shrink-0" />
                     Aspectos Destacados
                   </h4>
@@ -355,7 +402,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
                         key={idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.1 }}
+                        transition={{ delay: idx * 0.08 }}
                         className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-300 bg-gradient-to-r
                         from-white/5 to-transparent p-2 sm:p-3 rounded-lg border-l-2 border-cyan-400/50"
                       >
@@ -369,18 +416,17 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
                 {/* SECCIÓN VISUALIZACIÓN PREVIA (SOLO PARA TALLERES CON PDF) */}
                 {selected.hasPreview && (
                   <div>
-                    <h4 className="text-base sm:text-lg font-semibold mb-3 flex items-center gap-2">
+                    <h4 className="text-sm sm:text-base font-semibold mb-3 flex items-center gap-2">
                       <FaFilePdf className="text-red-400 flex-shrink-0" />
                       Visualización Previa
                     </h4>
 
                     <div className="bg-white/5 border border-white/10 rounded-xl p-3 sm:p-4">
                       <div className="bg-white/10 rounded-lg border border-white/20 overflow-hidden">
-                        {/* VISTA PREVIA REAL DEL PDF */}
                         <iframe
                           src={`/pdfs/${selected.pdfFile}`}
-                          className="w-full h-48 sm:h-64 md:h-80 rounded-lg"
-                        ></iframe>
+                          className="w-full h-40 sm:h-52 md:h-60 rounded-lg"
+                        />
                       </div>
 
                       <p className="text-xs text-gray-400 mt-2 text-center">
@@ -392,7 +438,7 @@ min-h-screen px-4 sm:px-6 pt-24 pb-12 sm:py-12">
               </div>
 
               {/* BOTONES DE ACCIÓN */}
-              <div className="flex flex-col sm:flex-row gap-3 mt-6 sm:mt-8">
+              <div className="flex flex-col sm:flex-row gap-3 mt-6 sm:mt-8 pb-2">
                 {selected.hasPreview && (
                   <button
                     onClick={() => handleDownloadPDF(selected.pdfFile)}

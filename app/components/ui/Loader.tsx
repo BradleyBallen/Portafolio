@@ -19,9 +19,9 @@ export default function Loader() {
       className="
         fixed inset-0 z-50 flex flex-col items-center justify-center
         backdrop-blur-lg 
-        bg-black/20              /* 🔥 Más transparente */
-        backdrop-brightness-125  /* 🔥 Aclara lo que hay detrás */
-        backdrop-saturate-150    /* 🔥 Hace más visibles los colores del fondo */
+        bg-black/20              /*  Más transparente */
+        backdrop-brightness-125  /*  Aclara lo que hay detrás */
+        backdrop-saturate-150    /*  Hace más visibles los colores del fondo */
       "
     >
       <motion.div
@@ -50,7 +50,7 @@ export default function Loader() {
           className="text-cyan-400 text-xl font-bold tracking-wide drop-shadow-lg"
 
         >
-          Cargando…
+          Cargando
         </motion.span>
       </motion.div>
 
@@ -67,7 +67,7 @@ export default function Loader() {
             }}
             className="text-white text-sm"
           >
-            Iniciando…
+            Bienvenido
           </motion.div>
         </div>
 

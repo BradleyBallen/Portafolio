@@ -2,8 +2,7 @@
 
 import { motion, useAnimation } from "framer-motion";
 import { useEffect, useRef } from "react";
-
-import { SiGithub, SiLinkedin, SiGmail } from "react-icons/si";
+import { SiGithub, SiLinkedin, SiGmail, SiWhatsapp } from "react-icons/si"; // Importar SiWhatsapp
 
 export default function ContactSection() {
   const ref = useRef(null);
@@ -74,8 +73,6 @@ export default function ContactSection() {
       >
         {/* TITLE */}
         <div className="mb-8 text-center relative w-full">
-
-          {/* 🔥 LÍNEA FULL WIDTH ENCIMA DEL TÍTULO */}
           <motion.div
             initial="collapsed"
             animate={lineControls}
@@ -112,6 +109,11 @@ export default function ContactSection() {
           {/* Email */}
           <p className="text-white/90 text-lg mb-6 text-center">
             📩 <span className="font-semibold">bradleyballen162004@gmail.com</span>
+          </p>
+
+          {/* WhatsApp */}
+          <p className="text-white/90 text-lg mb-6 text-center">
+            📞 <span className="font-semibold">3506377775</span>
           </p>
 
           {/* SOCIAL ICONS */}
@@ -161,6 +163,17 @@ export default function ContactSection() {
               className="text-5xl"
             >
               <SiGmail style={{ color: "#EA4335" }} />
+            </motion.a>
+
+            {/* WhatsApp */}
+            <motion.a
+              href="https://wa.me/3506377775"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.2, y: -5 }}
+              className="text-5xl"
+            >
+              <SiWhatsapp style={{ color: "#25D366" }} />
             </motion.a>
           </div>
         </div>
