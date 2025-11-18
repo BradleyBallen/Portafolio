@@ -39,6 +39,7 @@ export default function StudiesSection() {
   const touchEndX = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isSwipingRef = useRef(false);
+  const isTouchRef = useRef(false);
 
   const studies: StudyItem[] = useMemo(
     () => [
@@ -219,6 +220,7 @@ export default function StudiesSection() {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
     isSwipingRef.current = false;
+    isTouchRef.current = true;
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -236,10 +238,11 @@ export default function StudiesSection() {
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
-    if (!isSwipingRef.current) return;
-
-    touchEndX.current = e.changedTouches[0].clientX;
-    handleSwipe();
+    if (isSwipingRef.current) {
+      touchEndX.current = e.changedTouches[0].clientX;
+      handleSwipe();
+    }
+    isTouchRef.current = false;
     isSwipingRef.current = false;
   };
 
@@ -253,6 +256,13 @@ export default function StudiesSection() {
     } else if (diffX < -threshold) {
       // Deslizar a la derecha
       setCurrentIndex((prev) => (prev - 1 + studies.length) % studies.length);
+    }
+  };
+
+  const handleCardClick = (study: StudyItem) => {
+    // Solo abrir modal si no hubo swipe
+    if (!isSwipingRef.current) {
+      setSelected(study);
     }
   };
 
@@ -284,7 +294,7 @@ export default function StudiesSection() {
             <motion.div
               key={`${study.title}-${index}`}
               initial={false}
-              onClick={() => setSelected(study)}
+              onClick={() => handleCardClick(study)}
               animate={{
                 x: style.x,
                 z: style.z,
@@ -311,18 +321,6 @@ export default function StudiesSection() {
                 userSelect: "none",
               }}
               onMouseDown={(e) => e.preventDefault()}
-              onTouchStart={(e) => {
-                e.preventDefault();
-                handleTouchStart(e);
-              }}
-              onTouchMove={(e) => {
-                e.preventDefault();
-                handleTouchMove(e);
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                handleTouchEnd(e);
-              }}
               onDragStart={(e) => e.preventDefault()}
             >
               <div
