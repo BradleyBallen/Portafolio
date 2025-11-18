@@ -9,6 +9,7 @@ import ScrollFadeBackground from "./components/ScrollFadeBackground";
 import AnimatedBackground from "./components/background"; 
 import SkillsSection from "./components/SkillsSection";
 import StudiesSection from "./components/StudiesSection";
+import Contact from "./components/Contact";
 
 export default function Home() {
 
@@ -39,6 +40,9 @@ export default function Home() {
 
       {/* Proyectos */}
       <ProjectsSection />
+
+      {/* contacto */}
+      <Contact />
 
     </div>
   );
