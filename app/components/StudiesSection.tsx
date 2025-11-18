@@ -35,8 +35,10 @@ export default function StudiesSection() {
   const [isHovered, setIsHovered] = useState(false);
   const constraintsRef = useRef<HTMLDivElement | null>(null);
   const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
   const touchEndX = useRef(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isSwipingRef = useRef(false);
 
   const studies: StudyItem[] = useMemo(
     () => [
@@ -212,21 +214,43 @@ export default function StudiesSection() {
     document.body.removeChild(link);
   };
 
-  // Manejo de deslizamiento
+  // Manejo mejorado de deslizamiento
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+    isSwipingRef.current = false;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+
+    const diffX = Math.abs(currentX - touchStartX.current);
+    const diffY = Math.abs(currentY - touchStartY.current);
+
+    // Si el movimiento es más horizontal que vertical, prevenir scroll
+    if (diffX > diffY && diffX > 10) {
+      isSwipingRef.current = true;
+      e.preventDefault();
+    }
   };
 
   const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!isSwipingRef.current) return;
+
     touchEndX.current = e.changedTouches[0].clientX;
     handleSwipe();
+    isSwipingRef.current = false;
   };
 
   const handleSwipe = () => {
-    if (touchStartX.current - touchEndX.current > 50) {
+    const diffX = touchStartX.current - touchEndX.current;
+    const threshold = 30; // Reducido para mayor responsividad
+
+    if (diffX > threshold) {
       // Deslizar a la izquierda
       setCurrentIndex((prev) => (prev + 1) % studies.length);
-    } else if (touchEndX.current - touchStartX.current > 50) {
+    } else if (diffX < -threshold) {
       // Deslizar a la derecha
       setCurrentIndex((prev) => (prev - 1 + studies.length) % studies.length);
     }
@@ -245,11 +269,12 @@ export default function StudiesSection() {
       {/* CONTENEDOR 3D DEL CARRUSEL */}
       <div
         ref={constraintsRef}
-        className="relative w-full max-w-6xl min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center mt-0 sm:mt-2"
-        style={{ perspective: "1500px" }}
+        className="relative w-full max-w-6xl min-h-[380px] sm:h-[350px] md:h-[450px] lg:h-[500px] flex items-center justify-center mt-0 sm:mt-2 touch-none"
+        style={{ perspective: "1500px", touchAction: "none" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {studies.map((study, index) => {
@@ -269,23 +294,35 @@ export default function StudiesSection() {
               }}
               transition={{
                 type: "spring",
-                stiffness: 100,
-                damping: 20,
+                stiffness: 120,
+                damping: 18,
               }}
               whileHover={{ scale: style.scale * 1.05, y: -10 }}
               className="absolute w-[260px] sm:w-[280px] md:w-[300px] cursor-pointer
               backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5
               border border-white/20 shadow-2xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center
-              text-white transition-all hover:border-white/40"
+              text-white transition-all hover:border-white/40 select-none"
               style={{
                 transformStyle: "preserve-3d",
                 willChange: "transform, opacity",
                 pointerEvents: "auto",
                 zIndex: 10 + (style.opacity ? Math.round(style.opacity * 10) : 0),
                 translateZ: `${style.z}px`,
+                userSelect: "none",
               }}
               onMouseDown={(e) => e.preventDefault()}
-              onTouchStart={(e) => e.preventDefault()}
+              onTouchStart={(e) => {
+                e.preventDefault();
+                handleTouchStart(e);
+              }}
+              onTouchMove={(e) => {
+                e.preventDefault();
+                handleTouchMove(e);
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                handleTouchEnd(e);
+              }}
               onDragStart={(e) => e.preventDefault()}
             >
               <div
