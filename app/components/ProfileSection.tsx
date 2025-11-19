@@ -11,12 +11,23 @@ export default function Hero() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
       >
-        {/* Tarjeta con efecto liquid glass */}
-        <div className="relative rounded-3xl p-8 md:p-12 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border border-white/20 shadow-2xl overflow-hidden">
-          {/* Efectos de brillo y resplandor */}
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/5 to-purple-500/10 opacity-50" />
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-400/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-purple-400/20 rounded-full blur-3xl" />
+        {/* Tarjeta con efecto liquid glass REAL */}
+        <div className="relative rounded-3xl p-8 md:p-12 overflow-hidden">
+          {/* Capa de vidrio líquido - EFECTO PRINCIPAL */}
+          <div className="absolute inset-0 bg-white/[0.08] backdrop-blur-[4px]" />
+          
+          {/* Borde sutil con degradado */}
+          <div className="absolute inset-0 rounded-3xl border border-white/20" />
+          
+          {/* Efecto de reflejo superior (característica clave del liquid glass) */}
+          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent rounded-t-3xl" />
+          
+          {/* Efecto de sombra interna inferior */}
+          <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/10 to-transparent rounded-b-3xl" />
+          
+          {/* Brillo sutil en las esquinas (efecto gota) */}
+          <div className="absolute top-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/5 rounded-full blur-2xl" />
           
           {/* Contenido */}
           <div className="relative z-10 flex flex-col items-center">
