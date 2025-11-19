@@ -12,6 +12,7 @@ import {
   FaDownload,
   FaFilePdf,
   FaGoogle,
+  FaCode,
 } from "react-icons/fa";
 import { IconType } from "react-icons";
 
@@ -97,6 +98,27 @@ export default function StudiesSection() {
         ],
         category: "Certificación Internacional",
       },
+      {
+  title: "Maratón de Programación",
+  place: "Universidad de Cundinamarca",
+  years: "07 de Noviembre de 2025",
+  icon: <FaCode />,
+  iconComponent: FaCode,
+  iconColor: "from-cyan-400 to-blue-500",
+  description:
+    "Competencia intensiva de resolución de problemas algorítmicos bajo presión, aplicando estructuras de datos, lógica computacional y programación eficiente.",
+  highlights: [
+    "Resolución de problemas algorítmicos de forma óptima",
+    "Uso eficiente de Python para desafíos de tiempo real",
+    "Dominio de estructuras de datos (pilas, colas, árboles, grafos)",
+    "Implementación de estrategias como programación dinámica y greedy",
+    "Trabajo en equipo, análisis rápido y toma de decisiones bajo presión"
+  ],
+  category: "Competencia Académica",
+  pdfFile: "maraton-programacion.pdf",
+  hasPreview: true,
+},
+
       {
         title: "Curso: Fundamentals of Digital Marketing",
         place: "Google Digital Garage",
