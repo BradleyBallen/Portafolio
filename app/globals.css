@@ -122,3 +122,11 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevenir scroll horizontal en móviles */
+@media (max-width: 768px) {
+  body, html {
+    overflow-x: hidden;
+    width: 100%;
+  }
+}
